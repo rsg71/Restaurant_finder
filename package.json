@@ -3,13 +3,14 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "npm run lint",
-    "start": "npm run build && node build/server.js",
+    "start": "node build/server.js",
+    "build": "tsc",
+    "postinstall": "npm run build",
     "start:dev": "npx nodemon -L server.ts | pino-pretty --colorize",
+    "test": "npm run lint",
     "lint": "eslint --quiet .",
     "fix": "eslint --fix .",
-    "watch": "nodemon server.js | pino-pretty",
-    "build": "tsc"
+    "watch": "nodemon server.js | pino-pretty"
   },
   "keywords": [],
   "author": "",
