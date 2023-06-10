@@ -1,4 +1,4 @@
-import {Request, Response, NextFunction} from 'express';
+import {Request, Response} from 'express';
 
 // Requiring path to so we can use relative routes to our HTML files
 import path from "path";
@@ -9,6 +9,9 @@ import isAuthenticated from "../config/middleware/isAuthenticated";
 
 // Pino logger
 import logger from '../config/logger';
+
+
+logger.debug(`html routes __dirname: ${__dirname}`)
 
 function htmlRoutes (app: any) {
   app.get("/", (req: Request, res: Response) => {
