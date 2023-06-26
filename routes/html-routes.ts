@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 
 // Requiring path to so we can use relative routes to our HTML files
 import path from "path";
@@ -11,9 +11,23 @@ import isAuthenticated from "../config/middleware/isAuthenticated";
 import logger from '../config/logger';
 
 
+// Helper for Heroku. In production
+function routeHelper(route: string) {
+  let routePath = '';
+
+  if (process.env.NODE_ENV === 'production') {
+    routePath = path.join(__dirname, '../' + route)
+  } else {
+    routePath = path.join(__dirname, route)
+  }
+
+  return routePath;
+}
+
+
 logger.debug(`html routes __dirname: ${__dirname}`)
 
-function htmlRoutes (app: any) {
+function htmlRoutes(app: any) {
   app.get("/", (req: Request, res: Response) => {
     logger.debug(req.url);
 
@@ -22,7 +36,7 @@ function htmlRoutes (app: any) {
     if (req.user) {
       res.redirect("/members");
     }
-    res.sendFile(path.join(__dirname, "../public/signup.html"));
+    res.sendFile(routeHelper("../public/signup.html"));
   });
 
   app.get("/login", (req: Request, res: Response) => {
@@ -32,7 +46,7 @@ function htmlRoutes (app: any) {
     if (req.user) {
       res.redirect("/members");
     }
-    res.sendFile(path.join(__dirname, "../public/login.html"));
+    res.sendFile(routeHelper("../public/login.html"));
   });
 
   // Here we've add our isAuthenticated middleware to this route.
@@ -40,7 +54,7 @@ function htmlRoutes (app: any) {
   app.get("/members", isAuthenticated, (req: Request, res: Response) => {
     logger.debug(req.url);
 
-    res.sendFile(path.join(__dirname, "../public/members.html"));
+    res.sendFile(routeHelper("../public/members.html"));
   });
 
   // app.get("/auth/facebook/secrets", passport.authenticate("facebook"));
@@ -61,7 +75,7 @@ function htmlRoutes (app: any) {
     // if (req.user) {
     //   res.redirect("/favorites");
     // }
-    res.sendFile(path.join(__dirname, "../public/favorites.html"));
+    res.sendFile(routeHelper("../public/favorites.html"));
   });
 };
 

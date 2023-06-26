@@ -2,38 +2,44 @@ import passport from "passport";
 const LocalStrategy = require("passport-local").Strategy;
 // const FacebookStrategy = require("passport-facebook").Strategy;
 
-const db = require("../models");
+import db from "../models";
+import logger from "./logger";
 require("dotenv").config();
+
+
 
 // Telling passport we want to use a Local Strategy. In other words, we want login with a username/email and password
 passport.use(
   new LocalStrategy(
     // Our user will sign in using an email, rather than a "username"
     {
-      usernameField: "email",
+      usernameField: "email"
     },
     (email: string, password: string, done: any) => {
+      logger.warn('USING PASSPORT')
+
+      logger.debug('we are attempting now to find a user')
       // When a user tries to sign in this code runs
       db.User.findOne({
-        where: {
-          email: email,
-        },
-      }).then((dbUser: any) => {
-        // If there's no user with the given email
-        if (!dbUser) {
-          return done(null, false, {
-            message: "Incorrect email.",
-          });
-        }
-        // If there is a user with the given email, but the password the user gives us is incorrect
-        else if (!dbUser.validPassword(password)) {
-          return done(null, false, {
-            message: "Incorrect password.",
-          });
-        }
-        // If none of the above, return the user
-        return done(null, dbUser);
-      });
+        where: { 'email': email },
+      })
+        .then((dbUser: any) => {
+          // If there's no user with the given email
+          if (!dbUser) {
+            return done(null, false, {
+              message: "Incorrect email.",
+            });
+          }
+          // If there is a user with the given email, but the password the user gives us is incorrect
+          else if (!dbUser.validPassword(password)) {
+            return done(null, false, {
+              message: "Incorrect password.",
+            });
+          }
+          // If none of the above, return the user
+          logger.debug('User has successfully authenticated')
+          return done(null, dbUser);
+        });
     }
   )
 );
